@@ -1,5 +1,7 @@
+import math
+
 def solveSystem(inArray):
-    varCount = len(inArray) 
+    
     array = inArray 
     
     if len(array) == 1:
@@ -68,4 +70,24 @@ def conCat(array1,array2):
         newArray.append(element)
     
     return newArray
-print(solveSystem([[1,1,-3,1,2],[-5,3,-4,1,0],[1,1,2,-1,1],[1,2,-2,-2,12]]))
+def traceFunction(functionSet):
+    degree = len(functionSet)
+    system = []
+    for element in functionSet:
+        newEquation = []
+        xVal = element[0]
+        for index in range(0,degree):
+            newCoef = xVal ** index
+            newEquation.append(newCoef)
+        yVal = element[1]
+        newEquation.append(yVal)
+        system.append(newEquation)
+    return solveSystem(system)
+function = []
+for realNumber in range(0,100):
+    number = realNumber/100
+    newSet = [number]
+    newSet.append(math.sin(number))
+    function.append(newSet)
+
+print(traceFunction(function))
