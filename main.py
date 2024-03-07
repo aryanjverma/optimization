@@ -1,5 +1,5 @@
 import math
-
+import random
 def solveSystem(inArray):
     
     array = inArray 
@@ -83,11 +83,35 @@ def traceFunction(functionSet):
         newEquation.append(yVal)
         system.append(newEquation)
     return solveSystem(system)
-function = []
-for realNumber in range(0,100):
-    number = realNumber/100
-    newSet = [number]
-    newSet.append(math.sin(number))
-    function.append(newSet)
 
-print(traceFunction(function))
+def createFunction(coeffecients):
+    coefAmount = len(coeffecients)
+    def mathFunction(xVal):
+        finalVal = 0
+        for index in range (0,coefAmount):
+            change = coeffecients[index] * xVal ** index
+            finalVal += change
+        return finalVal
+    return mathFunction
+def createDerivative(function):
+    functionSize = len(function)
+    newCoefs = deriveCoefs(function)
+    def mathDerivative(xVal):
+        derivative = createFunction(newCoefs)
+        return(derivative(xVal))
+    return mathDerivative
+def deriveCoefs(coeffecients):
+    coefAmount = len(coeffecients)
+    finalCoefs = []
+    for index in range(0,coefAmount):
+        newCoef = index * coeffecients[index]
+        finalCoefs.append(newCoef)
+    
+    return finalCoefs[1:]
+function = [[1,2],[3,4],[2,9],[4,3]]
+coefs = traceFunction(function)
+print(coefs)
+newFunction = createFunction(coefs)
+print(newFunction(0.5))
+newDerivative = createDerivative(coefs)
+print(newDerivative(0.5))
