@@ -1,3 +1,4 @@
+import math
 class functionMaker:
     def __init__(self):
         pass
@@ -64,11 +65,8 @@ class functionMaker:
         newArray = []
         for element in array1:
             newArray.append(element)
-        
-        
         for element in array2:
             newArray.append(element)
-        
         return newArray
     def traceFunction(self,functionSet):
         degree = len(functionSet)
@@ -83,6 +81,32 @@ class functionMaker:
             newEquation.append(yVal)
             system.append(newEquation)
         return self.solveSystem(system)
+    def diffTraceFunction(self,functionSet,diffSet):
+        degree = len(functionSet) * 2
+        print(degree)
+        system = []
+        for element in functionSet:
+            newEquation = []
+            xVal = element[0]
+            for index in range(0,degree):
+                newCoef = xVal ** index
+                newEquation.append(newCoef)
+            yVal = element[1]
+            newEquation.append(yVal)
+            system.append(newEquation)
+        for element in diffSet:
+            newEquation = []
+            xVal = element[0]
+            newEquation.append(0)
+            for index in range(1,degree):
+                newCoef = (index) * (xVal ** (index-1)) 
+                newEquation.append(newCoef)
+            
+            diffVal = element[1]
+            newEquation.append(diffVal)
+            system.append(newEquation)
+        
+        return self.solveSystem(system)
 
     def createFunction(self,coeffecients):
         coefAmount = len(coeffecients)
@@ -93,9 +117,9 @@ class functionMaker:
                 finalVal += change
             return finalVal
         return mathFunction
-    def createDerivative(self,function):
-        functionSize = len(function)
-        newCoefs = self.deriveCoefs(function)
+    def createDerivative(self,oldCoefs):
+        functionSize = len(oldCoefs)
+        newCoefs = self.deriveCoefs(oldCoefs)
         def mathDerivative(xVal):
             derivative = self.createFunction(newCoefs)
             return(derivative(xVal))
@@ -107,3 +131,50 @@ class functionMaker:
             newCoef = index * coeffecients[index]
             finalCoefs.append(newCoef)
         return finalCoefs[1:]
+
+class functionProperties:
+    def __init__(self):
+        self.functionCalc = functionMaker()
+    def createSquareFunction(self,coefs):
+        function = self.functionCalc.createFunction(coefs)
+        newDegree = 2* len(coefs)
+        functionSet = []
+        for xVal in range(0,newDegree):
+            newPair = [xVal]
+            yVal= (function(xVal)) ** 2
+            newPair.append(yVal)
+            functionSet.append(newPair)
+        newSquareFunc = self.functionCalc.traceFunction(functionSet)
+        newSquareFunc.pop()
+        return newSquareFunc
+    def findSquareZero(self,coefs):
+        newCoefs = self.createSquareFunction(coefs)
+        newFunc = self.functionCalc.createFunction(newCoefs)
+        derivative = self.functionCalc.createDerivative(newCoefs)
+        xVal = 0
+        count = 0
+        while math.fabs(newFunc(xVal)) > 1/(10**6):
+            count += 1
+            if derivative(xVal) == 0:
+                xVal += 1
+            else:
+                currentVal = newFunc(xVal)
+                currentDiff = derivative(xVal)
+                xVal -= currentVal/currentDiff 
+        print(count)
+        return xVal
+    def findZero(self,coefs):
+        newFunc = self.functionCalc.createFunction(coefs)
+        derivative = self.functionCalc.createDerivative(coefs)
+        xVal = 0
+        count = 0
+        while math.fabs(newFunc(xVal)) > 1/(10**6):
+            count += 1
+            if derivative(xVal) == 0:
+                xVal += 1
+            else:
+                currentVal = newFunc(xVal)
+                currentDiff = derivative(xVal)
+                xVal -= currentVal/currentDiff 
+        print(count)
+        return xVal
