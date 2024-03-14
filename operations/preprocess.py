@@ -1,4 +1,5 @@
 import math
+from random import random
 class functionMaker:
     def __init__(self):
         pass
@@ -83,7 +84,7 @@ class functionMaker:
         return self.solveSystem(system)
     def diffTraceFunction(self,functionSet,diffSet):
         degree = len(functionSet) * 2
-        print(degree)
+        
         system = []
         for element in functionSet:
             newEquation = []
@@ -163,18 +164,70 @@ class functionProperties:
                 xVal -= currentVal/currentDiff 
         print(count)
         return xVal
-    def findZero(self,coefs):
+    def findZero(self,coefs,lowerBound,upperBound):
         newFunc = self.functionCalc.createFunction(coefs)
         derivative = self.functionCalc.createDerivative(coefs)
-        xVal = 0
-        count = 0
-        while math.fabs(newFunc(xVal)) > 1/(10**6):
-            count += 1
+        if lowerBound == "No":
+            xVal = upperBound
+        elif upperBound == "No":
+            xVal = lowerBound
+        else:
+            xVal = (lowerBound + upperBound)/2
+        maxIterations = 1000 
+        
+        for iteration in range(maxIterations):
+            if math.fabs(newFunc(xVal)) < (10**-6):
+                return xVal
             if derivative(xVal) == 0:
+                
                 xVal += 1
             else:
                 currentVal = newFunc(xVal)
                 currentDiff = derivative(xVal)
-                xVal -= currentVal/currentDiff 
-        print(count)
-        return xVal
+                xVal -= currentVal/currentDiff
+                
+                if upperBound != "No":
+                    if xVal > upperBound:
+                        xVal = upperBound
+                if lowerBound != "No":
+                    if xVal < lowerBound:
+                        xVal = lowerBound
+        return "No"
+    def findAllZeros(self,coefs): 
+        degree = len(coefs)
+        if degree == 2:
+            return [-1 * coefs[0]/coefs[1]]
+        else:
+            
+            newFunc = self.functionCalc.createFunction(coefs)
+            derivativeCoefs = self.functionCalc.deriveCoefs(coefs)
+            derivative = self.functionCalc.createFunction(derivativeCoefs)
+            guessList = self.findAllZeros(derivativeCoefs)
+            for index in range(len(guessList)):
+                if index == 0:
+                    temp = guessList[index]
+                    guessList.insert(0,temp)
+                    guessList[index] -= 10**-6
+                else:
+                    guessList[index] += 10**-6
+            if len(guessList) == 0:
+                guessList.append(0)
+            guessList.insert(0,"No")
+            guessList.append("No")
+            guessAmount = len(guessList)
+            zeroList = []
+            
+            for iteration in range(guessAmount - 1):
+                
+                lowerBound = guessList[iteration]
+                upperBound = guessList[iteration + 1]
+                zero = self.findZero(coefs,lowerBound,upperBound)
+                if zero != "No":
+                    newZeroCheck = 1
+                    for oldZero in zeroList:
+                        if math.fabs(oldZero - zero) < (10**-3):
+                            newZeroCheck = 0
+                    if newZeroCheck == 1:
+                        zeroList.append(zero)
+                    
+            return zeroList
